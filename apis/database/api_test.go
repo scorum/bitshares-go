@@ -18,7 +18,7 @@ func getAPI(t *testing.T) *API {
 	databaseAPIID, err := login.NewAPI(transport).Database()
 	require.NoError(t, err)
 
-	return NewAPI(*databaseAPIID, transport)
+	return NewAPI(databaseAPIID, transport)
 }
 
 func TestGetChainID(t *testing.T) {
@@ -77,7 +77,7 @@ func TestSetBlockAppliedCallback(t *testing.T) {
 		called = true
 	})
 	require.NoError(t, err)
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 	require.True(t, called)
 
 	require.NoError(t, databaseAPI.CancelAllSubscriptions())

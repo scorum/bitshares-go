@@ -3,6 +3,7 @@ package websocket
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/scorum/openledger-go/caller"
 	"log"
 	"math"
 	"strconv"
@@ -53,7 +54,7 @@ func NewTransport(url string) (*Transport, error) {
 	return client, nil
 }
 
-func (caller *Transport) Call(api uint8, method string, args []interface{}, reply interface{}) error {
+func (caller *Transport) Call(api caller.APIID, method string, args []interface{}, reply interface{}) error {
 	caller.reqMutex.Lock()
 	defer caller.reqMutex.Unlock()
 
@@ -82,6 +83,9 @@ func (caller *Transport) Call(api uint8, method string, args []interface{}, repl
 		Params: []interface{}{api, method, args},
 	}
 
+	debug, _ := json.Marshal(request)
+	println(string(debug))
+
 	// send Json Rcp request
 	if err := websocket.JSON.Send(caller.conn, request); err != nil {
 		caller.mutex.Lock()
@@ -97,6 +101,7 @@ func (caller *Transport) Call(api uint8, method string, args []interface{}, repl
 	}
 
 	if c.Reply != nil {
+		println(string(*c.Reply))
 		if err := json.Unmarshal(*c.Reply, reply); err != nil {
 			return err
 		}
@@ -192,7 +197,7 @@ func (caller *Transport) onNotice(incoming transport.RPCIncoming) error {
 	return nil
 }
 
-func (caller *Transport) SetCallback(api uint8, method string, notice func(args json.RawMessage)) error {
+func (caller *Transport) SetCallback(api caller.APIID, method string, notice func(args json.RawMessage)) error {
 	// increase callback id
 	caller.callbackMutex.Lock()
 	if caller.callbackID == math.MaxUint64 {

@@ -7,9 +7,11 @@ import (
 
 var EmptyParams = []interface{}{}
 
+type APIID uint8
+
 type Caller interface {
-	Call(api uint8, method string, args []interface{}, reply interface{}) error
-	SetCallback(api uint8, method string, callback func(raw json.RawMessage)) error
+	Call(api APIID, method string, args []interface{}, reply interface{}) error
+	SetCallback(api APIID, method string, callback func(raw json.RawMessage)) error
 }
 
 type CallCloser interface {

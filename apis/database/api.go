@@ -8,10 +8,10 @@ import (
 
 type API struct {
 	caller caller.Caller
-	id     uint8
+	id     caller.APIID
 }
 
-func NewAPI(id uint8, caller caller.Caller) *API {
+func NewAPI(id caller.APIID, caller caller.Caller) *API {
 	return &API{id: id, caller: caller}
 }
 
@@ -60,7 +60,6 @@ func (api *API) SetBlockAppliedCallback(notice func(blockID string, err error)) 
 		for _, b := range header {
 			notice(b, nil)
 		}
-		notice(string(raw), nil)
 	})
 	return
 }

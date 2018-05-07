@@ -25,8 +25,8 @@ func TestGetMarketHistory(t *testing.T) {
 	historyAPIID, err := login.NewAPI(transport).History()
 	require.NoError(t, err)
 
-	historyAPI := NewAPI(*historyAPIID, transport)
-	databaseAPI := database.NewAPI(*databaseAPIID, transport)
+	historyAPI := NewAPI(historyAPIID, transport)
+	databaseAPI := database.NewAPI(databaseAPIID, transport)
 
 	// lookup symbols ids
 	symbols, err := databaseAPI.LookupAssetSymbols("OPEN.SCR", "USD")

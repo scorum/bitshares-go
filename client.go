@@ -40,14 +40,14 @@ func NewClient(url string) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.Database = database.NewAPI(*databaseAPIID, client.cc)
+	client.Database = database.NewAPI(databaseAPIID, client.cc)
 
 	// history
 	historyAPIID, err := loginAPI.History()
 	if err != nil {
 		return nil, err
 	}
-	client.History = history.NewAPI(*historyAPIID, client.cc)
+	client.History = history.NewAPI(historyAPIID, client.cc)
 
 	return client, nil
 }
