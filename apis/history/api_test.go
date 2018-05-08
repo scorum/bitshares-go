@@ -36,11 +36,29 @@ func TestGetMarketHistory(t *testing.T) {
 	USD := symbols[1].ID
 
 	day := time.Hour * 24
-	start := types.NewTime(time.Now().Add(-30 * day))
+	start := types.NewTime(time.Now().Add(-5 * day))
 	end := types.NewTime(time.Now())
-	buckets, err := historyAPI.GetMarketHistory(openSCR, USD, 3600, start, end)
+	buckets, err := historyAPI.GetMarketHistory(openSCR, USD, 60, start, end)
 
 	// assert
 	require.NoError(t, err)
 	require.NotNil(t, buckets)
+}
+
+func TestGetMarketHistoryBuckets(t *testing.T) {
+	transport, err := websocket.NewTransport(url)
+	require.NoError(t, err)
+	defer transport.Close()
+
+	// request access to the history api
+	historyAPIID, err := login.NewAPI(transport).History()
+	require.NoError(t, err)
+
+	historyAPI := NewAPI(historyAPIID, transport)
+
+	buckets, err := historyAPI.GetMarketHistoryBuckets()
+	require.NoError(t, err)
+
+	// [15,60,300,3600,86400] in seconds
+	require.Len(t, buckets, 5)
 }

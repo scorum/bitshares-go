@@ -4,6 +4,7 @@ import (
 	"github.com/scorum/openledger-go/apis/database"
 	"github.com/scorum/openledger-go/apis/history"
 	"github.com/scorum/openledger-go/apis/login"
+	"github.com/scorum/openledger-go/apis/networkbroadcast"
 	"github.com/scorum/openledger-go/caller"
 	"github.com/scorum/openledger-go/transport/websocket"
 )
@@ -13,6 +14,9 @@ type Client struct {
 
 	// Database represents database_api
 	Database *database.API
+
+	// NetworkBroadcast represents network_broadcast_api
+	NetworkBroadcast *networkbroadcast.API
 
 	// History represents history_api
 	History *history.API
@@ -48,6 +52,13 @@ func NewClient(url string) (*Client, error) {
 		return nil, err
 	}
 	client.History = history.NewAPI(historyAPIID, client.cc)
+
+	// network broadcast
+	networkBroadcastAPIID, err := loginAPI.NetworkBroadcast()
+	if err != nil {
+		return nil, err
+	}
+	client.NetworkBroadcast = networkbroadcast.NewAPI(networkBroadcastAPIID, client.cc)
 
 	return client, nil
 }
