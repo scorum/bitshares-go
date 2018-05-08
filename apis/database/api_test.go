@@ -43,6 +43,14 @@ func TestLookupAssetSymbol(t *testing.T) {
 	require.Equal(t, "1.3.121", symbols[1].ID.String())
 }
 
+func TestGetLimitOrders(t *testing.T) {
+	databaseAPI := getAPI(t)
+	symbols, err := databaseAPI.LookupAssetSymbols("OPEN.BTC", "USD")
+	require.NoError(t, err)
+
+	_, err = databaseAPI.GetLimitOrders(symbols[0].ID, symbols[1].ID, 100)
+}
+
 func TestGetBlockHeader(t *testing.T) {
 	databaseAPI := getAPI(t)
 	header, err := databaseAPI.GetBlockHeader(25)

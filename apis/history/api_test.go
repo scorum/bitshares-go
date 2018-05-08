@@ -62,3 +62,30 @@ func TestGetMarketHistoryBuckets(t *testing.T) {
 	// [15,60,300,3600,86400] in seconds
 	require.Len(t, buckets, 5)
 }
+
+func TestGetFillOrderHistory(t *testing.T) {
+	transport, err := websocket.NewTransport(url)
+	require.NoError(t, err)
+	defer transport.Close()
+
+	// request access to the database api
+	databaseAPIID, err := login.NewAPI(transport).Database()
+	require.NoError(t, err)
+
+	// request access to the history api
+	historyAPIID, err := login.NewAPI(transport).History()
+	require.NoError(t, err)
+
+	historyAPI := NewAPI(historyAPIID, transport)
+	databaseAPI := database.NewAPI(databaseAPIID, transport)
+
+	// lookup symbols ids
+	symbols, err := databaseAPI.LookupAssetSymbols("OPEN.SCR", "USD")
+	require.NoError(t, err)
+
+	openSCR := symbols[0].ID
+	USD := symbols[1].ID
+
+	orders, err := historyAPI.GetFillOrderHistory(openSCR, USD, 5)
+	require.True(t, len(orders) > 0)
+}

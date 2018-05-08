@@ -18,7 +18,7 @@ func (api *API) call(method string, args []interface{}, reply interface{}) error
 	return api.caller.Call(api.id, method, args, reply)
 }
 
-// GetMarketHistory returns market history (candlesticks) for the given period
+// GetMarketHistory returns market history base/quote (candlesticks) for the given period
 func (api *API) GetMarketHistory(base, quote types.ObjectID, bucketSeconds uint32, start, end types.Time) ([]*Bucket, error) {
 	var resp []*Bucket
 	err := api.call("get_market_history", []interface{}{base.String(), quote.String(), bucketSeconds, start, end}, &resp)
@@ -30,5 +30,12 @@ func (api *API) GetMarketHistory(base, quote types.ObjectID, bucketSeconds uint3
 func (api *API) GetMarketHistoryBuckets() ([]uint32, error) {
 	var resp []uint32
 	err := api.call("get_market_history_buckets", caller.EmptyParams, &resp)
+	return resp, err
+}
+
+// GetFillOrderHistory returns filled orders
+func (api *API) GetFillOrderHistory(base, quote types.ObjectID, limit uint32) ([]*OrderHistory, error) {
+	var resp []*OrderHistory
+	err := api.call("get_fill_order_history", []interface{}{base.String(), quote.String(), limit}, &resp)
 	return resp, err
 }

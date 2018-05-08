@@ -30,9 +30,19 @@ func (api *API) GetChainID() (*string, error) {
 }
 
 // LookupAssetSymbols get assets corresponding to the provided symbols or IDs
-func (api *API) LookupAssetSymbols(symbols ...string) ([]*AssetObject, error) {
-	var resp []*AssetObject
+func (api *API) LookupAssetSymbols(symbols ...string) ([]*Asset, error) {
+	var resp []*Asset
 	err := api.call("lookup_asset_symbols", []interface{}{symbols}, &resp)
+	return resp, err
+}
+
+// GetLimitOrders returns limit orders in a given market.
+// There are both sell and buy orders.
+// For the sell orders LimitOrder.SellPrice.Base = the given base
+// For the buy orders LimitOrder.SellPrice.Base = the given quote
+func (api *API) GetLimitOrders(base, quote types.ObjectID, limit uint32) ([]*LimitOrder, error) {
+	var resp []*LimitOrder
+	err := api.call("get_limit_orders", []interface{}{base.String(), quote.String(), limit}, &resp)
 	return resp, err
 }
 
