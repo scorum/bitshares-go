@@ -12,20 +12,20 @@ import "github.com/scorum/openledger-go"
 
 ## Example
 ```go
-client, _ := NewClient("wss://bitshares.openledger.info/ws")
+client, err := NewClient("wss://bitshares.openledger.info/ws")
 
 // retrieve the current global_property_object
 client.Database.GetDynamicGlobalProperties()
 
 // lookup symbols ids
-symbols, err := databaseAPI.LookupAssetSymbols("OPEN.SCR", "USD")
+symbols, err := client.Database.LookupAssetSymbols("OPEN.SCR", "USD")
 require.NoError(t, err)
 
 openSCR := symbols[0].ID
 USD := symbols[1].ID
 
-// retrieve a last 5 filled orders
-orders, err := historyAPI.GetFillOrderHistory(openSCR, USD, 5)
+// retrieve 5 last filled orders
+orders, err := client.History.GetFillOrderHistory(openSCR, USD, 5)
 
 // set a block applied callback
 client.Database.SetBlockAppliedCallback(func(blockID string, err error) {
