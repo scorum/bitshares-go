@@ -1,8 +1,8 @@
-# scorum/scorum-go
+# scorum/openledger-go
 [![Go Report Card](https://goreportcard.com/badge/github.com/scorum/openledger-go)](https://goreportcard.com/report/github.com/scorum/openledger-go)
 [![GoDoc](https://godoc.org/github.com/scorum/openledger-go?status.svg)](https://godoc.org/github.com/scorum/openledger-go)
 
-Golang RPC (via websockets) client library for [Bitshares](https://bitshares.org/) and [Openledger](https://openledger.io) in particular
+Golang RPC (via websockets) client library for [Bitshares](https://bitshares.org/) and [OpenLedger](https://openledger.io) in particular
 
 ## Usage
 
@@ -16,6 +16,16 @@ client, _ := NewClient("wss://bitshares.openledger.info/ws")
 
 // retrieve the current global_property_object
 client.Database.GetDynamicGlobalProperties()
+
+// lookup symbols ids
+symbols, err := databaseAPI.LookupAssetSymbols("OPEN.SCR", "USD")
+require.NoError(t, err)
+
+openSCR := symbols[0].ID
+USD := symbols[1].ID
+
+// retrieve a last 5 filled orders
+orders, err := historyAPI.GetFillOrderHistory(openSCR, USD, 5)
 
 // set a block applied callback
 client.Database.SetBlockAppliedCallback(func(blockID string, err error) {
