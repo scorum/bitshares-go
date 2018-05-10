@@ -29,6 +29,20 @@ func (api *API) GetChainID() (*string, error) {
 	return &resp, err
 }
 
+// GetConfig retrieves compile-time constants
+func (api *API) GetConfig() (*Config, error) {
+	var config Config
+	err := api.call("get_config", caller.EmptyParams, &config)
+	return &config, err
+}
+
+// GetDynamicGlobalProperties retrieves the current global_property_object
+func (api *API) GetDynamicGlobalProperties() (*DynamicGlobalProperties, error) {
+	var resp DynamicGlobalProperties
+	err := api.call("get_dynamic_global_properties", caller.EmptyParams, &resp)
+	return &resp, err
+}
+
 // LookupAssetSymbols get assets corresponding to the provided symbols or IDs
 func (api *API) LookupAssetSymbols(symbols ...string) ([]*Asset, error) {
 	var resp []*Asset
@@ -50,6 +64,13 @@ func (api *API) GetLimitOrders(base, quote types.ObjectID, limit uint32) ([]*Lim
 func (api *API) GetBlockHeader(blockNum int32) (*BlockHeader, error) {
 	var resp BlockHeader
 	err := api.call("get_block_header", []interface{}{blockNum}, &resp)
+	return &resp, err
+}
+
+// GetBlock
+func (api *API) GetBlock(blockNum int32) (*Block, error) {
+	var resp Block
+	err := api.call("get_block", []interface{}{blockNum}, &resp)
 	return &resp, err
 }
 

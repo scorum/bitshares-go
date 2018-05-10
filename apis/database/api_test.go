@@ -60,6 +60,14 @@ func TestGetBlockHeader(t *testing.T) {
 	require.NotEmpty(t, header.Witness)
 }
 
+func TestGetBlock(t *testing.T) {
+	databaseAPI := getAPI(t)
+	block, err := databaseAPI.GetBlock(26851092)
+	require.NoError(t, err)
+	require.NotEmpty(t, block.Previous)
+	require.NotEmpty(t, block.Witness)
+}
+
 func TestGetTicker(t *testing.T) {
 	databaseAPI := getAPI(t)
 	symbols, err := databaseAPI.LookupAssetSymbols("OPEN.SCR", "USD")
@@ -73,6 +81,22 @@ func TestGetTicker(t *testing.T) {
 
 	require.Equal(t, ticker.Base, openSCR)
 	require.Equal(t, ticker.Quote, USD)
+}
+
+func TestDynamicGlobalProperties(t *testing.T) {
+	databaseAPI := getAPI(t)
+	props, err := databaseAPI.GetDynamicGlobalProperties()
+	require.NoError(t, err)
+	require.True(t, props.HeadBlockNumber > 0)
+	require.True(t, props.LastIrreversibleBlockNum > 0)
+}
+
+func TestGetConfig(t *testing.T) {
+	databaseAPI := getAPI(t)
+	config, err := databaseAPI.GetConfig()
+	require.NoError(t, err)
+	require.Equal(t, "BTS", config.GrapheneAddressPrefix)
+	require.Equal(t, "BTS", config.GrapheneSymbol)
 }
 
 func TestSetBlockAppliedCallback(t *testing.T) {
