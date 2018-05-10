@@ -65,7 +65,9 @@ func unmarshalOperation(opType OpType, obj json.RawMessage) (Operation, error) {
 }
 
 var knownOperations = map[OpType]reflect.Type{
-	TransferOpType: reflect.TypeOf(TransferOperation{}),
+	TransferOpType:         reflect.TypeOf(TransferOperation{}),
+	LimitOrderCreateOpType: reflect.TypeOf(LimitOrderCreateOperation{}),
+	LimitOrderCancelOpType: reflect.TypeOf(LimitOrderCancelOperation{}),
 }
 
 // UnknownOperation
@@ -94,3 +96,26 @@ type Memo struct {
 }
 
 func (op *TransferOperation) Type() OpType { return TransferOpType }
+
+// LimitOrderCreateOperation
+type LimitOrderCreateOperation struct {
+	Fee          AssetAmount       `json:"fee"`
+	Seller       ObjectID          `json:"seller"`
+	AmountToSell AssetAmount       `json:"amount_to_sell"`
+	MinToReceive AssetAmount       `json:"min_to_receive"`
+	Expiration   Time              `json:"expiration"`
+	FillOrKill   bool              `json:"fill_or_kill"`
+	Extensions   []json.RawMessage `json:"extensions"`
+}
+
+func (op *LimitOrderCreateOperation) Type() OpType { return LimitOrderCreateOpType }
+
+// LimitOrderCancelOpType
+type LimitOrderCancelOperation struct {
+	Fee              AssetAmount       `json:"fee"`
+	FeePayingAccount ObjectID          `json:"fee_paying_account"`
+	Order            ObjectID          `json:"order"`
+	Extensions       []json.RawMessage `json:"extensions"`
+}
+
+func (op *LimitOrderCancelOperation) Type() OpType { return LimitOrderCancelOpType }
