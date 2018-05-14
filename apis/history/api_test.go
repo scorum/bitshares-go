@@ -89,3 +89,23 @@ func TestGetFillOrderHistory(t *testing.T) {
 	orders, err := historyAPI.GetFillOrderHistory(openSCR, USD, 5)
 	require.True(t, len(orders) > 0)
 }
+
+func TestAccountHistory(t *testing.T) {
+	transport, err := websocket.NewTransport(url)
+	require.NoError(t, err)
+	defer transport.Close()
+
+	// request access to the history api
+	historyAPIID, err := login.NewAPI(transport).History()
+	require.NoError(t, err)
+
+	historyAPI := NewAPI(historyAPIID, transport)
+
+	user, _ := types.ParseObjectID("1.2.900546")
+	start, _ := types.ParseObjectID("1.11.0")
+	stop, _ := types.ParseObjectID("1.11.0")
+
+	history, err := historyAPI.GetAccountHistory(user, stop, 100, start)
+	require.NoError(t, err)
+	require.Len(t, history, 2)
+}

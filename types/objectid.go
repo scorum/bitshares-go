@@ -25,31 +25,42 @@ func (o *ObjectID) UnmarshalJSON(s []byte) error {
 		return errors.Errorf("unable to parse ObjectID from %s", s)
 	}
 
-	parts := strings.Split(str, ".")
-
-	if len(parts) != 3 {
-		return errors.Errorf("unable to parse ObjectID from %s", s)
-	}
-
-	var objectID ObjectID
-
-	objectID.Space, err = strconv.ParseUint(parts[0], 10, 64)
+	objectID, err := ParseObjectID(str)
 	if err != nil {
-		return errors.Errorf("unable to parse ObjectID [space] from %s", s)
-	}
-
-	objectID.Type, err = strconv.ParseUint(parts[1], 10, 64)
-	if err != nil {
-		return errors.Errorf("unable to parse ObjectID [type] from %s", s)
-	}
-
-	objectID.ID, err = strconv.ParseUint(parts[2], 10, 64)
-	if err != nil {
-		return errors.Errorf("unable to parse ObjectID [id] from %s", s)
+		return err
 	}
 
 	*o = objectID
 	return nil
+}
+
+func ParseObjectID(str string) (ObjectID, error) {
+	var err error
+
+	objectID := ObjectID{}
+
+	parts := strings.Split(str, ".")
+
+	if len(parts) != 3 {
+		return objectID, errors.Errorf("unable to parse ObjectID from %s", str)
+	}
+
+	objectID.Space, err = strconv.ParseUint(parts[0], 10, 64)
+	if err != nil {
+		return objectID, errors.Errorf("unable to parse ObjectID [space] from %s", str)
+	}
+
+	objectID.Type, err = strconv.ParseUint(parts[1], 10, 64)
+	if err != nil {
+		return objectID, errors.Errorf("unable to parse ObjectID [type] from %s", str)
+	}
+
+	objectID.ID, err = strconv.ParseUint(parts[2], 10, 64)
+	if err != nil {
+		return objectID, errors.Errorf("unable to parse ObjectID [id] from %ss", str)
+	}
+
+	return objectID, nil
 }
 
 func unquote(in string) (string, error) {

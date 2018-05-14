@@ -39,3 +39,14 @@ func (api *API) GetFillOrderHistory(base, quote types.ObjectID, limit uint32) ([
 	err := api.call("get_fill_order_history", []interface{}{base.String(), quote.String(), limit}, &resp)
 	return resp, err
 }
+
+// GetAccountHistory gets operations relevant to the specified account
+// account: The account whose history should be queried
+// stop: ID of the earliest operation to retrieve
+// limit: Maximum number of operations to retrieve (must not exceed 100)
+// start: ID of the most recent operation to retrieve
+func (api *API) GetAccountHistory(account, stop types.ObjectID, limit int, start types.ObjectID) ([]*OperationHistory, error) {
+	var history []*OperationHistory
+	err := api.call("get_account_history", []interface{}{account.String(), stop.String(), limit, start.String()}, &history)
+	return history, err
+}

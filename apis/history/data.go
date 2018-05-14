@@ -1,6 +1,9 @@
 package history
 
-import "github.com/scorum/openledger-go/types"
+import (
+	"encoding/json"
+	"github.com/scorum/openledger-go/types"
+)
 
 type Bucket struct {
 	ID          string    `json:"id"`
@@ -25,10 +28,10 @@ type BucketKey struct {
 }
 
 type OrderHistory struct {
-	ID        string     `json:"id"`
-	Key       OrderKey   `json:"key"`
-	Time      types.Time `json:"time"`
-	Operation Operation  `json:"op"`
+	ID        string         `json:"id"`
+	Key       OrderKey       `json:"key"`
+	Time      types.Time     `json:"time"`
+	Operation OrderOperation `json:"op"`
 }
 
 type OrderKey struct {
@@ -37,7 +40,7 @@ type OrderKey struct {
 	Sequence int32          `json:"sequence"`
 }
 
-type Operation struct {
+type OrderOperation struct {
 	Fee       types.AssetAmount `json:"fee"`
 	Pays      types.AssetAmount `json:"pays"`
 	Receives  types.AssetAmount `json:"receives"`
@@ -45,4 +48,14 @@ type Operation struct {
 	OrderID   types.ObjectID    `json:"order_id"`
 	AccountID types.ObjectID    `json:"account_id"`
 	IsMaker   bool              `json:"is_maker"`
+}
+
+type OperationHistory struct {
+	ID                       string            `json:"id"`
+	BlockNumber              uint32            `json:"block_num"`
+	TransactionsInBlock      uint32            `json:"trx_in_block"`
+	OperationsInTransactions uint32            `json:"op_in_trx"`
+	VirtualOperations        uint32            `json:"virtual_op"`
+	Result                   []json.RawMessage `json:"result"`
+	Operations               []json.RawMessage `json:"op"`
 }

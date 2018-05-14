@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/scorum/openledger-go/apis/login"
 	"github.com/scorum/openledger-go/transport/websocket"
+	"github.com/scorum/openledger-go/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
