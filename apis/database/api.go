@@ -36,6 +36,23 @@ func (api *API) GetConfig() (*Config, error) {
 	return &config, err
 }
 
+// GetTransaction used to fetch an individual transaction
+func (api *API) GetTransaction(blockNum uint32, trxInBlock uint32) (*types.Transaction, error) {
+	var resp types.Transaction
+	err := api.call("get_transaction", []interface{}{blockNum, trxInBlock}, &resp)
+	return &resp, err
+}
+
+// GetRecentTransactionByID
+// If the transaction has not expired, this method will return the transaction for the given ID or
+// it will return NULL if it is not known. Just because it is not known does not mean
+// it wasn’t included in the blockchain.
+func (api *API) GetRecentTransactionByID(transactionID uint32) (*types.Transaction, error) {
+	var resp types.Transaction
+	err := api.call("get_recent_transaction_by_id", []interface{}{transactionID}, &resp)
+	return &resp, err
+}
+
 // GetDynamicGlobalProperties retrieves the current global_property_object
 func (api *API) GetDynamicGlobalProperties() (*DynamicGlobalProperties, error) {
 	var resp DynamicGlobalProperties
@@ -67,11 +84,18 @@ func (api *API) GetBlockHeader(blockNum int32) (*BlockHeader, error) {
 	return &resp, err
 }
 
-// GetBlock
+// GetBlock return a block by the given block number
 func (api *API) GetBlock(blockNum int32) (*Block, error) {
 	var resp Block
 	err := api.call("get_block", []interface{}{blockNum}, &resp)
 	return &resp, err
+}
+
+// GetBlock return a block by the given block number
+func (api *API) GetObjects(assets ...types.ObjectID) ([]json.RawMessage, error) {
+	var resp []json.RawMessage
+	err := api.call("get_objects", []interface{}{objectsToParams(assets)}, &resp)
+	return resp, err
 }
 
 // GetTicker returns the ticker for the market assetA:assetB (past 24 hours)
@@ -79,6 +103,38 @@ func (api *API) GetTicker(base, quote types.ObjectID) (*MarketTicker, error) {
 	var resp MarketTicker
 	err := api.call("get_ticker", []interface{}{base.String(), quote.String()}, &resp)
 	return &resp, err
+}
+
+// GetAccountBalances
+// Get an account’s balances in various assets.
+func (api *API) GetAccountBalances(accountID types.ObjectID, assets ...types.ObjectID) ([]*types.AssetAmount, error) {
+	var resp []*types.AssetAmount
+	err := api.call("get_account_balances", []interface{}{accountID.String(), objectsToParams(assets)}, &resp)
+	return resp, err
+}
+
+func objectsToParams(objs []types.ObjectID) []string {
+	objsStr := make([]string, len(objs))
+	for i, asset := range objs {
+		objsStr[i] = asset.String()
+	}
+	return objsStr
+}
+
+// Semantically equivalent to get_account_balances, but takes a name instead of an ID.
+func (api *API) GetNamedAccountBalances(account string, assets ...types.ObjectID) ([]*types.AssetAmount, error) {
+	var resp []*types.AssetAmount
+	err := api.call("get_named_account_balances", []interface{}{account, objectsToParams(assets)}, &resp)
+	return resp, err
+}
+
+// LookupAccounts gets names and IDs for registered accounts
+// lower_bound_name: Lower bound of the first name to return
+// limit: Maximum number of results to return must not exceed 1000
+func (api *API) LookupAccounts(lowerBoundName string, limit uint16) (AccountsMap, error) {
+	var resp AccountsMap
+	err := api.call("lookup_accounts", []interface{}{lowerBoundName, limit}, &resp)
+	return resp, err
 }
 
 // SetBlockAppliedCallback registers a global subscription callback

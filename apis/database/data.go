@@ -70,19 +70,46 @@ type DynamicGlobalProperties struct {
 }
 
 type Config struct {
-	GrapheneSymbol        string `json:"GRAPHENE_SYMBOL"`
-	GrapheneAddressPrefix string `json:"GRAPHENE_ADDRESS_PREFIX"`
+	GrapheneSymbol               string `json:"GRAPHENE_SYMBOL"`
+	GrapheneAddressPrefix        string `json:"GRAPHENE_ADDRESS_PREFIX"`
+	GrapheneMinAccountNameLength uint8  `json:"GRAPHENE_MIN_ACCOUNT_NAME_LENGTH"`
+	GrapheneMaxAccountNameLength uint8  `json:"GRAPHENE_MAX_ACCOUNT_NAME_LENGTH"`
+	GrapheneMinAssetSymbolLength uint8  `json:"GRAPHENE_MIN_ASSET_SYMBOL_LENGTH"`
+	GrapheneMaxAssetSymbolLength uint8  `json:"GRAPHENE_MAX_ASSET_SYMBOL_LENGTH"`
+	GrapheneMaxShareSupply       string `json:"GRAPHENE_MAX_SHARE_SUPPLY"`
+}
+
+type AccountsMap map[string]types.ObjectID
+
+func (o *AccountsMap) UnmarshalJSON(b []byte) error {
+	out := make(map[string]types.ObjectID)
+
+	// unmarshal array
+	var arr []json.RawMessage
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return err
+	}
+
+	var (
+		key string
+		obj types.ObjectID
+	)
+
+	for _, item := range arr {
+		account := []interface{}{&key, &obj}
+		if err := json.Unmarshal(item, &account); err != nil {
+			return err
+		}
+
+		out[key] = obj
+	}
+
+	*o = out
+	return nil
 }
 
 /*
 {
-  "GRAPHENE_SYMBOL": "BTS",
-  "GRAPHENE_ADDRESS_PREFIX": "BTS",
-  "GRAPHENE_MIN_ACCOUNT_NAME_LENGTH": 1,
-  "GRAPHENE_MAX_ACCOUNT_NAME_LENGTH": 63,
-  "GRAPHENE_MIN_ASSET_SYMBOL_LENGTH": 3,
-  "GRAPHENE_MAX_ASSET_SYMBOL_LENGTH": 16,
-  "GRAPHENE_MAX_SHARE_SUPPLY": "1000000000000000",
   "GRAPHENE_MAX_PAY_RATE": 10000,
   "GRAPHENE_MAX_SIG_CHECK_DEPTH": 2,
   "GRAPHENE_MIN_TRANSACTION_SIZE_LIMIT": 1024,

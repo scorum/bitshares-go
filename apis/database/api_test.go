@@ -44,12 +44,72 @@ func TestLookupAssetSymbol(t *testing.T) {
 	require.Equal(t, "1.3.121", symbols[1].ID.String())
 }
 
+func TestGetAccountBalances(t *testing.T) {
+	databaseAPI := getAPI(t)
+	user, _ := types.ParseObjectID("1.2.900546")
+
+	t.Run("empty assets should return all balanced", func(t *testing.T) {
+		balances, err := databaseAPI.GetAccountBalances(user)
+		require.NoError(t, err)
+		require.NotEmpty(t, balances)
+	})
+
+	t.Run("request SCR balance", func(t *testing.T) {
+		symbols, _ := databaseAPI.LookupAssetSymbols("OPEN.SCR")
+
+		balances, err := databaseAPI.GetAccountBalances(user, symbols[0].ID)
+		require.NoError(t, err)
+		require.NotEmpty(t, balances)
+	})
+
+	t.Run("request USD balance", func(t *testing.T) {
+		symbols, _ := databaseAPI.LookupAssetSymbols("USD")
+
+		balances, err := databaseAPI.GetAccountBalances(user, symbols[0].ID)
+		require.NoError(t, err)
+		require.NotEmpty(t, balances)
+		require.Equal(t, uint64(0), balances[0].Amount)
+	})
+}
+
+func TestGetNamedAccountBalances(t *testing.T) {
+	databaseAPI := getAPI(t)
+
+	t.Run("empty assets should return all balanced", func(t *testing.T) {
+		balances, err := databaseAPI.GetNamedAccountBalances("megaherz1")
+		require.NoError(t, err)
+		require.NotEmpty(t, balances)
+	})
+
+	t.Run("not existing account", func(t *testing.T) {
+		_, err := databaseAPI.GetNamedAccountBalances("nonexists")
+		require.Error(t, err)
+	})
+}
+
+func TestLookupAccounts(t *testing.T) {
+	databaseAPI := getAPI(t)
+
+	t.Run("empty lower bound", func(t *testing.T) {
+		accounts, err := databaseAPI.LookupAccounts("", 3)
+		require.NoError(t, err)
+		require.Len(t, accounts, 3)
+	})
+
+	t.Run("limit exceeded", func(t *testing.T) {
+		_, err := databaseAPI.LookupAccounts("", 1001)
+		require.Error(t, err)
+	})
+}
+
 func TestGetLimitOrders(t *testing.T) {
 	databaseAPI := getAPI(t)
 	symbols, err := databaseAPI.LookupAssetSymbols("OPEN.BTC", "USD")
 	require.NoError(t, err)
 
-	_, err = databaseAPI.GetLimitOrders(symbols[0].ID, symbols[1].ID, 100)
+	orders, err := databaseAPI.GetLimitOrders(symbols[0].ID, symbols[1].ID, 100)
+	require.NoError(t, err)
+	require.NotEmpty(t, orders)
 }
 
 func TestGetBlockHeader(t *testing.T) {
@@ -63,10 +123,33 @@ func TestGetBlockHeader(t *testing.T) {
 
 func TestGetBlock(t *testing.T) {
 	databaseAPI := getAPI(t)
-	block, err := databaseAPI.GetBlock(26851092)
+	block, err := databaseAPI.GetBlock(26851093)
 	require.NoError(t, err)
 	require.NotEmpty(t, block.Previous)
 	require.NotEmpty(t, block.Witness)
+}
+
+func TestGetTransaction(t *testing.T) {
+	databaseAPI := getAPI(t)
+
+	t.Run("first transaction in a block", func(t *testing.T) {
+		trx, err := databaseAPI.GetTransaction(26851092, 1)
+		require.NoError(t, err)
+		require.NotNil(t, trx)
+		require.Len(t, trx.Operations, 1)
+	})
+
+	t.Run("trx num exceeded", func(t *testing.T) {
+		_, err := databaseAPI.GetTransaction(26851092, 100)
+		require.Error(t, err) //Assert Exception: opt_block->transactions.size() > trx_num
+	})
+}
+
+func TestGetRecentTransactionByID(t *testing.T) {
+	databaseAPI := getAPI(t)
+	trx, err := databaseAPI.GetRecentTransactionByID(3)
+	require.NoError(t, err)
+	require.NotNil(t, trx)
 }
 
 func TestGetTicker(t *testing.T) {
