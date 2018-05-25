@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/scorum/openledger-go/apis/login"
 	"github.com/scorum/openledger-go/transport/websocket"
 	"github.com/scorum/openledger-go/types"
