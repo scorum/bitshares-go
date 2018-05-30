@@ -101,7 +101,6 @@ func (caller *Transport) Call(api caller.APIID, method string, args []interface{
 	}
 
 	if c.Reply != nil {
-		println(string(*c.Reply))
 		if err := json.Unmarshal(*c.Reply, reply); err != nil {
 			return err
 		}
@@ -165,6 +164,9 @@ func (caller *Transport) onCallResponse(response transport.RPCResponse, call *ca
 	call.Reply = response.Result
 	call.Done <- true
 	caller.mutex.Unlock()
+
+	debug, _ := json.Marshal(response)
+	println(string(debug))
 }
 
 // Incoming notice handler

@@ -47,6 +47,29 @@ func (ops *Operations) UnmarshalJSON(b []byte) (err error) {
 	return nil
 }
 
+type operationTuple struct {
+	Type OpType
+	Data Operation
+}
+
+func (op *operationTuple) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]interface{}{
+		op.Type,
+		op.Data,
+	})
+}
+
+func (ops Operations) MarshalJSON() ([]byte, error) {
+	tuples := make([]*operationTuple, 0, len(ops))
+	for _, op := range ops {
+		tuples = append(tuples, &operationTuple{
+			Type: op.Type(),
+			Data: op,
+		})
+	}
+	return json.Marshal(tuples)
+}
+
 func unmarshalOperation(opType OpType, obj json.RawMessage) (Operation, error) {
 	op, ok := knownOperations[opType]
 	if !ok {
