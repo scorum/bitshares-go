@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"github.com/scorum/openledger-go/encoding/transaction"
 	"strconv"
 )
 
@@ -15,9 +16,16 @@ type AssetAmount struct {
 	AssetID ObjectID `json:"asset_id"`
 }
 
+func (aa AssetAmount) MarshalTransaction(encoder *transaction.Encoder) error {
+	enc := transaction.NewRollingEncoder(encoder)
+	enc.EncodeUVarint(aa.Amount)
+	enc.Encode(aa.AssetID)
+	return enc.Err()
+}
+
 // RPC client might return asset amount as uint64 or string,
 // therefore a custom unmarshaller is used
-func (ops *AssetAmount) UnmarshalJSON(b []byte) (err error) {
+func (aa *AssetAmount) UnmarshalJSON(b []byte) (err error) {
 	stringCase := struct {
 		Amount  string   `json:"amount"`
 		AssetID ObjectID `json:"asset_id"`
@@ -29,15 +37,15 @@ func (ops *AssetAmount) UnmarshalJSON(b []byte) (err error) {
 	}{}
 
 	if err = json.Unmarshal(b, &uint64Case); err == nil {
-		ops.AssetID = uint64Case.AssetID
-		ops.Amount = uint64Case.Amount
+		aa.AssetID = uint64Case.AssetID
+		aa.Amount = uint64Case.Amount
 		return nil
 	}
 
 	// failed on uint64, try string
 	if err = json.Unmarshal(b, &stringCase); err == nil {
-		ops.AssetID = stringCase.AssetID
-		ops.Amount, err = strconv.ParseUint(stringCase.Amount, 10, 64)
+		aa.AssetID = stringCase.AssetID
+		aa.Amount, err = strconv.ParseUint(stringCase.Amount, 10, 64)
 		return err
 	}
 

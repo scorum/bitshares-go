@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"github.com/pkg/errors"
+	"github.com/scorum/openledger-go/encoding/transaction"
 	"reflect"
 )
 
@@ -96,6 +97,16 @@ type Memo struct {
 }
 
 func (op *TransferOperation) Type() OpType { return TransferOpType }
+
+func (op *TransferOperation) MarshalTransaction(encoder *transaction.Encoder) error {
+	enc := transaction.NewRollingEncoder(encoder)
+	enc.EncodeUVarint(uint64(op.Type()))
+	enc.Encode(op.From)
+	enc.Encode(op.To)
+	enc.Encode(op.Amount)
+	enc.Encode(op.Fee) //Memo?
+	return enc.Err()
+}
 
 // LimitOrderCreateOperation
 type LimitOrderCreateOperation struct {
