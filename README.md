@@ -36,3 +36,5 @@ client.Database.SetBlockAppliedCallback(func(blockID string, err error) {
 client.Database.CancelAllSubscriptions()
 
 ```
+## Status
+The project is in active development but should not be used in production yet.

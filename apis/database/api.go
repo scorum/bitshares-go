@@ -78,14 +78,14 @@ func (api *API) GetLimitOrders(base, quote types.ObjectID, limit uint32) ([]*Lim
 }
 
 // GetBlockHeader returns block header by the given block number
-func (api *API) GetBlockHeader(blockNum int32) (*BlockHeader, error) {
+func (api *API) GetBlockHeader(blockNum uint32) (*BlockHeader, error) {
 	var resp BlockHeader
 	err := api.call("get_block_header", []interface{}{blockNum}, &resp)
 	return &resp, err
 }
 
 // GetBlock return a block by the given block number
-func (api *API) GetBlock(blockNum int32) (*Block, error) {
+func (api *API) GetBlock(blockNum uint32) (*Block, error) {
 	var resp Block
 	err := api.call("get_block", []interface{}{blockNum}, &resp)
 	return &resp, err

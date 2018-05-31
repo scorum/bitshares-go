@@ -1,8 +1,10 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
+	"github.com/scorum/openledger-go/encoding/transaction"
 	"strconv"
 	"strings"
 )
@@ -19,6 +21,10 @@ func (o ObjectID) String() string {
 	return fmt.Sprintf("%d.%d.%d", o.Space, o.Type, o.ID)
 }
 
+func (o *ObjectID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(o.String())
+}
+
 func (o *ObjectID) UnmarshalJSON(s []byte) error {
 	str, err := unquote(string(s))
 	if err != nil {
@@ -32,6 +38,19 @@ func (o *ObjectID) UnmarshalJSON(s []byte) error {
 
 	*o = objectID
 	return nil
+}
+
+func (o ObjectID) MarshalTransaction(encoder *transaction.Encoder) error {
+	encoder.Encode(o.String())
+	return nil
+}
+
+func MustParseObjectID(str string) ObjectID {
+	out, err := ParseObjectID(str)
+	if err != nil {
+		panic(err)
+	}
+	return out
 }
 
 func ParseObjectID(str string) (ObjectID, error) {

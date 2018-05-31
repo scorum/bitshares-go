@@ -1,9 +1,8 @@
 package types
 
 import (
+	"github.com/scorum/openledger-go/encoding/transaction"
 	"time"
-
-	"github.com/scorum/scorum-go/encoding/transaction"
 )
 
 const Layout = `"2006-01-02T15:04:05"`
@@ -31,6 +30,6 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (t *Time) MarshalTransaction(encoder *transaction.Encoder) error {
+func (t Time) MarshalTransaction(encoder *transaction.Encoder) error {
 	return encoder.Encode(uint32(t.Time.UTC().Unix()))
 }

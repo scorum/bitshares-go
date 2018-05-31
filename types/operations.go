@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"github.com/pkg/errors"
+	"github.com/scorum/openledger-go/encoding/transaction"
 	"reflect"
 )
 
@@ -44,6 +45,29 @@ func (ops *Operations) UnmarshalJSON(b []byte) (err error) {
 	}
 
 	return nil
+}
+
+type operationTuple struct {
+	Type OpType
+	Data Operation
+}
+
+func (op *operationTuple) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]interface{}{
+		op.Type,
+		op.Data,
+	})
+}
+
+func (ops Operations) MarshalJSON() ([]byte, error) {
+	tuples := make([]*operationTuple, 0, len(ops))
+	for _, op := range ops {
+		tuples = append(tuples, &operationTuple{
+			Type: op.Type(),
+			Data: op,
+		})
+	}
+	return json.Marshal(tuples)
 }
 
 func unmarshalOperation(opType OpType, obj json.RawMessage) (Operation, error) {
@@ -96,6 +120,17 @@ type Memo struct {
 }
 
 func (op *TransferOperation) Type() OpType { return TransferOpType }
+
+func (op *TransferOperation) MarshalTransaction(encoder *transaction.Encoder) error {
+	enc := transaction.NewRollingEncoder(encoder)
+	enc.EncodeUVarint(uint64(op.Type()))
+	enc.Encode(op.Fee)
+	enc.Encode(op.From)
+	enc.Encode(op.To)
+	enc.Encode(op.Amount)
+	//Memo?
+	return enc.Err()
+}
 
 // LimitOrderCreateOperation
 type LimitOrderCreateOperation struct {

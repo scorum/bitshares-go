@@ -1,12 +1,16 @@
 package openledger
 
 import (
+	"github.com/pkg/errors"
 	"github.com/scorum/openledger-go/apis/database"
 	"github.com/scorum/openledger-go/apis/history"
 	"github.com/scorum/openledger-go/apis/login"
 	"github.com/scorum/openledger-go/apis/networkbroadcast"
 	"github.com/scorum/openledger-go/caller"
+	"github.com/scorum/openledger-go/sign"
 	"github.com/scorum/openledger-go/transport/websocket"
+	"github.com/scorum/openledger-go/types"
+	"time"
 )
 
 type Client struct {
@@ -23,6 +27,8 @@ type Client struct {
 
 	// Login represents login_api
 	Login *login.API
+
+	chainID string
 }
 
 // NewClient creates a new RPC client
@@ -46,6 +52,13 @@ func NewClient(url string) (*Client, error) {
 	}
 	client.Database = database.NewAPI(databaseAPIID, client.cc)
 
+	// chain ID
+	chainID, err := client.Database.GetChainID()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get chain ID")
+	}
+	client.chainID = *chainID
+
 	// history
 	historyAPIID, err := loginAPI.History()
 	if err != nil {
@@ -67,4 +80,53 @@ func NewClient(url string) (*Client, error) {
 // It simply calls Close() on the underlying CallCloser.
 func (client *Client) Close() error {
 	return client.cc.Close()
+}
+
+// Transfer a certain amount of the given asset
+func (client *Client) Transfer(key string, from, to types.ObjectID, amount types.AssetAmount) error {
+	op := types.TransferOperation{
+		From:   from,
+		To:     to,
+		Amount: amount,
+		Fee: types.AssetAmount{ // will be filled in automatically
+			Amount:  0,
+			AssetID: amount.AssetID,
+		},
+	}
+	return client.broadcast([]string{key}, &op)
+}
+
+// Sign the given operations with the wifs and broadcast them as one transaction
+func (client *Client) broadcast(wifs []string, operations ...types.Operation) error {
+	props, err := client.Database.GetDynamicGlobalProperties()
+	if err != nil {
+		return errors.Wrap(err, "failed to get dynamic global properties")
+	}
+
+	block, err := client.Database.GetBlock(props.LastIrreversibleBlockNum)
+	if err != nil {
+		return errors.Wrap(err, "failed to get block")
+	}
+
+	refBlockPrefix, err := sign.RefBlockPrefix(block.Previous)
+	if err != nil {
+		return errors.Wrap(err, "failed to sign block prefix")
+	}
+
+	expiration := props.Time.Add(10 * time.Minute)
+	stx := sign.NewSignedTransaction(&types.Transaction{
+		RefBlockNum:    sign.RefBlockNum(props.LastIrreversibleBlockNum - 1&0xffff),
+		RefBlockPrefix: refBlockPrefix,
+		Expiration:     types.Time{Time: &expiration},
+	})
+
+	for _, op := range operations {
+		stx.PushOperation(op)
+	}
+
+	if err = stx.Sign(wifs, client.chainID); err != nil {
+		return errors.Wrap(err, "failed to sign the transaction")
+	}
+
+	return client.NetworkBroadcast.BroadcastTransaction(stx.Transaction)
 }
