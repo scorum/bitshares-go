@@ -24,10 +24,12 @@ func TestClient(t *testing.T) {
 }
 
 func TestClient_Transfer(t *testing.T) {
+	t.SkipNow()
+
 	client, err := NewClient(testNet)
 	require.NoError(t, err)
 
-	scorum1 := "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"
+	scorum1 := "5KBuq5WmHvgePmB7w3onYsqLM8ESomM2Ae7SigYuuwg8MDHW7NN"
 	from := types.MustParseObjectID("1.2.124")
 	to := types.MustParseObjectID("1.2.1241")
 	amount := types.AssetAmount{
@@ -37,3 +39,25 @@ func TestClient_Transfer(t *testing.T) {
 
 	require.NoError(t, client.Transfer(scorum1, from, to, amount))
 }
+
+/*
+export const limit_order_create = new Serializer("limit_order_create", {
+    fee: asset,
+    seller: protocol_id_type("account"),
+    amount_to_sell: asset,
+    min_to_receive: asset,
+    expiration: time_point_sec,
+    fill_or_kill: bool,
+    extensions: set(future_extensions)
+});
+
+export const limit_order_cancel = new Serializer("limit_order_cancel", {
+    fee: asset,
+    fee_paying_account: protocol_id_type("account"),
+    order: protocol_id_type("limit_order"),
+    extensions: set(future_extensions)
+});
+*/
+
+// python tests
+// https://github.com/bitshares/python-bitshares/blob/9250544ca8eadf66de31c7f38fc37294c11f9548/tests/test_transactions.py

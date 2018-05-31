@@ -124,10 +124,11 @@ func (op *TransferOperation) Type() OpType { return TransferOpType }
 func (op *TransferOperation) MarshalTransaction(encoder *transaction.Encoder) error {
 	enc := transaction.NewRollingEncoder(encoder)
 	enc.EncodeUVarint(uint64(op.Type()))
+	enc.Encode(op.Fee)
 	enc.Encode(op.From)
 	enc.Encode(op.To)
 	enc.Encode(op.Amount)
-	enc.Encode(op.Fee) //Memo?
+	//Memo?
 	return enc.Err()
 }
 
