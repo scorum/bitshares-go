@@ -34,6 +34,13 @@ func (encoder *Encoder) EncodeUVarint(i uint64) error {
 	return encoder.writeBytes(b[:n])
 }
 
+func (encoder *Encoder) EncodeLittleEndianUInt64(i uint64) error {
+	b := make([]byte, binary.MaxVarintLen64)
+	binary.LittleEndian.PutUint64(b, i)
+
+	return encoder.writeBytes(b[:8])
+}
+
 func (encoder *Encoder) EncodeNumber(v interface{}) error {
 	if err := binary.Write(encoder.w, binary.LittleEndian, v); err != nil {
 		return errors.Wrapf(err, "encoder: failed to write number: %v", v)

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"github.com/scorum/openledger-go/apis/login"
 	"github.com/scorum/openledger-go/transport/websocket"
 	"github.com/scorum/openledger-go/types"
@@ -197,4 +198,25 @@ func TestSetBlockAppliedCallback(t *testing.T) {
 	require.True(t, called)
 
 	require.NoError(t, databaseAPI.CancelAllSubscriptions())
+}
+
+func TestGetRequiredFee(t *testing.T) {
+	databaseAPI := getAPI(t)
+
+	op := types.TransferOperation{}
+	op.To = types.MustParseObjectID("1.2.22805")
+	op.From = types.MustParseObjectID("1.2.974337")
+	op.Fee = types.AssetAmount{
+		Amount:  0,
+		AssetID: types.MustParseObjectID("1.3.0"),
+	}
+	op.Amount = types.AssetAmount{
+		Amount:  1000000,
+		AssetID: types.MustParseObjectID("1.3.0"),
+	}
+	op.Extensions = []json.RawMessage{}
+
+	res, err := databaseAPI.GetRequiredFee([]types.Operation{&op}, "1.3.0")
+	require.NoError(t, err)
+	require.NotEmpty(t, res)
 }

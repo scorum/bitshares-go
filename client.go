@@ -10,6 +10,7 @@ import (
 	"github.com/scorum/openledger-go/sign"
 	"github.com/scorum/openledger-go/transport/websocket"
 	"github.com/scorum/openledger-go/types"
+	"log"
 	"time"
 )
 
@@ -83,17 +84,17 @@ func (client *Client) Close() error {
 }
 
 // Transfer a certain amount of the given asset
-func (client *Client) Transfer(key string, from, to types.ObjectID, amount types.AssetAmount) error {
-	op := types.TransferOperation{
-		From:   from,
-		To:     to,
-		Amount: amount,
-		Fee: types.AssetAmount{ // will be filled in automatically
-			Amount:  0,
-			AssetID: amount.AssetID,
-		},
+func (client *Client) Transfer(key string, from, to types.ObjectID, amount, fee types.AssetAmount) error {
+	op := types.NewTransferOperation(from, to, amount, fee)
+
+	fees, err := client.Database.GetRequiredFee([]types.Operation{op}, fee.AssetID.String())
+	if err != nil {
+		log.Println(err)
+		return errors.Wrap(err, "can't get fees")
 	}
-	return client.broadcast([]string{key}, &op)
+	op.Fee.Amount = fees[0].Amount
+
+	return client.broadcast([]string{key}, op)
 }
 
 // Sign the given operations with the wifs and broadcast them as one transaction
