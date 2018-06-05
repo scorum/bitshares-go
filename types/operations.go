@@ -102,13 +102,26 @@ type UnknownOperation struct {
 
 func (op *UnknownOperation) Type() OpType { return op.kind }
 
+// NewTransferOperation returns a new instance of TransferOperation
+func NewTransferOperation(from, to ObjectID, amount, fee AssetAmount) *TransferOperation {
+	op := &TransferOperation{
+		From:       from,
+		To:         to,
+		Amount:     amount,
+		Fee:        fee,
+		Extensions: []json.RawMessage{},
+	}
+
+	return op
+}
+
 // TransferOperation
 type TransferOperation struct {
 	From       ObjectID          `json:"from"`
 	To         ObjectID          `json:"to"`
 	Amount     AssetAmount       `json:"amount"`
 	Fee        AssetAmount       `json:"fee"`
-	Memo       Memo              `json:"memo"`
+	Memo       *Memo             `json:"memo,omitempty"`
 	Extensions []json.RawMessage `json:"extensions"`
 }
 
@@ -128,7 +141,11 @@ func (op *TransferOperation) MarshalTransaction(encoder *transaction.Encoder) er
 	enc.Encode(op.From)
 	enc.Encode(op.To)
 	enc.Encode(op.Amount)
+
 	//Memo?
+	enc.EncodeUVarint(0)
+	//Extensions
+	enc.EncodeUVarint(0)
 	return enc.Err()
 }
 

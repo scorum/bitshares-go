@@ -3,6 +3,7 @@ package openledger
 import (
 	"github.com/scorum/openledger-go/types"
 	"github.com/stretchr/testify/require"
+	"log"
 	"testing"
 )
 
@@ -24,20 +25,33 @@ func TestClient(t *testing.T) {
 }
 
 func TestClient_Transfer(t *testing.T) {
-	t.SkipNow()
-
 	client, err := NewClient(testNet)
-	require.NoError(t, err)
+	require.Nil(t, err)
 
-	scorum1 := "5KBuq5WmHvgePmB7w3onYsqLM8ESomM2Ae7SigYuuwg8MDHW7NN"
-	from := types.MustParseObjectID("1.2.124")
-	to := types.MustParseObjectID("1.2.1241")
+	cali4888arr, err := client.Database.LookupAccounts("cali4889", 2)
+	require.Nil(t, err)
+
+	log.Println(cali4888arr["cali4889"])
+
+	cali4889ID := cali4888arr["cali4889"]
+	cali4890ID := cali4888arr["cali4890"]
+
+	assets, err := client.Database.LookupAssetSymbols("TEST")
+	require.Nil(t, err)
+
+	cali4889IDActiveKey := "5JiTY3m9u1iPfoKsZdn18pnf26XvX2WnXFJckSiSaiUniNVzxLn"
+	from := cali4889ID
+	to := cali4890ID
 	amount := types.AssetAmount{
-		AssetID: types.MustParseObjectID("1.3.0"),
-		Amount:  10000,
+		AssetID: assets[0].ID,
+		Amount:  1000,
+	}
+	fee := types.AssetAmount{
+		AssetID: assets[0].ID,
+		Amount:  0,
 	}
 
-	require.NoError(t, client.Transfer(scorum1, from, to, amount))
+	require.NoError(t, client.Transfer(cali4889IDActiveKey, from, to, amount, fee))
 }
 
 /*
