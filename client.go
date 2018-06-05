@@ -83,17 +83,9 @@ func (client *Client) Close() error {
 }
 
 // Transfer a certain amount of the given asset
-func (client *Client) Transfer(key string, from, to types.ObjectID, amount types.AssetAmount) error {
-	op := types.TransferOperation{
-		From:   from,
-		To:     to,
-		Amount: amount,
-		Fee: types.AssetAmount{ // will be filled in automatically
-			Amount:  0,
-			AssetID: amount.AssetID,
-		},
-	}
-	return client.broadcast([]string{key}, &op)
+func (client *Client) Transfer(key string, from, to types.ObjectID, amount, fee types.AssetAmount) error {
+	op := types.NewTransferOperation(from, to, amount, fee)
+	return client.broadcast([]string{key}, op)
 }
 
 // Sign the given operations with the wifs and broadcast them as one transaction

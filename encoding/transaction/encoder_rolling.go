@@ -45,6 +45,12 @@ func (encoder *RollingEncoder) EncodeMoney(s string) {
 	}
 }
 
+func (encoder *RollingEncoder) EncodeLittleEndianUInt64(i uint64) {
+	if encoder.err == nil {
+		encoder.err = encoder.next.EncodeLittleEndianUInt64(i)
+	}
+}
+
 func (encoder *RollingEncoder) Err() error {
 	return encoder.err
 }

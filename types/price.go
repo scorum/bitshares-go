@@ -18,7 +18,7 @@ type AssetAmount struct {
 
 func (aa AssetAmount) MarshalTransaction(encoder *transaction.Encoder) error {
 	enc := transaction.NewRollingEncoder(encoder)
-	enc.EncodeUVarint(aa.Amount)
+	enc.EncodeLittleEndianUInt64(aa.Amount)
 	enc.Encode(aa.AssetID)
 	return enc.Err()
 }

@@ -84,7 +84,7 @@ func (caller *Transport) Call(api caller.APIID, method string, args []interface{
 	}
 
 	debug, _ := json.Marshal(request)
-	println(string(debug))
+	log.Printf("[DEBUG] ws.Call method:%s request:%s\n", method, string(debug))
 
 	// send Json Rcp request
 	if err := websocket.JSON.Send(caller.conn, request); err != nil {

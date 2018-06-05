@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/scorum/openledger-go/encoding/transaction"
 	"github.com/scorum/openledger-go/types"
+	"log"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcutil"
@@ -53,8 +54,12 @@ func (tx *SignedTransaction) Digest(chain string) ([]byte, error) {
 		return nil, errors.Wrap(err, "failed to write serialized transaction")
 	}
 
+	msgBytes := msgBuffer.Bytes()
+	message := hex.EncodeToString(msgBytes)
+	log.Printf("[DEBUG] Digest final message:%s\n", message)
+
 	// Compute the digest.
-	digest := sha256.Sum256(msgBuffer.Bytes())
+	digest := sha256.Sum256(msgBytes)
 	return digest[:], nil
 }
 
