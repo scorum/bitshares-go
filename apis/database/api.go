@@ -155,3 +155,23 @@ func (api *API) SetBlockAppliedCallback(notice func(blockID string, err error)) 
 func (api *API) CancelAllSubscriptions() error {
 	return api.call("cancel_all_subscriptions", caller.EmptyParams, nil)
 }
+
+// GetRequiredFee fetchs fee for operations
+func (api *API) GetRequiredFee(ops []types.Operation, assetID string) ([]types.AssetAmount, error) {
+	var resp []types.AssetAmount
+
+	opsJSON := []interface{}{}
+	for _, o := range ops {
+		_, err := json.Marshal(o)
+		if err != nil {
+			return []types.AssetAmount{}, err
+		}
+
+		opArr := []interface{}{o.Type(), o}
+
+		opsJSON = append(opsJSON, opArr)
+	}
+
+	err := api.call("get_required_fees", []interface{}{opsJSON, assetID}, &resp)
+	return resp, err
+}

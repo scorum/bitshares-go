@@ -51,7 +51,7 @@ func TestClient_Transfer(t *testing.T) {
 	}
 	fee := types.AssetAmount{
 		AssetID: assets[0].ID,
-		Amount:  100,
+		Amount:  0,
 	}
 
 	require.NoError(t, client.Transfer(scorum1, from, to, amount, fee))
