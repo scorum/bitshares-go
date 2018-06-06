@@ -1,4 +1,4 @@
-package openledger
+package bitshares
 
 import (
 	"encoding/json"

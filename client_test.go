@@ -1,4 +1,4 @@
-package openledger
+package bitshares
 
 import (
 	"github.com/scorum/openledger-go/types"
@@ -94,25 +94,3 @@ func TestClient_LimitOrderCreate(t *testing.T) {
 	err = client.LimitOrderCancel(cali4889IDActiveKey, cali4889ID, orderID, fee)
 	require.NoError(t, err)
 }
-
-/*
-export const limit_order_create = new Serializer("limit_order_create", {
-    fee: asset,
-    seller: protocol_id_type("account"),
-    amount_to_sell: asset,
-    min_to_receive: asset,
-    expiration: time_point_sec,
-    fill_or_kill: bool,
-    extensions: set(future_extensions)
-});
-
-export const limit_order_cancel = new Serializer("limit_order_cancel", {
-    fee: asset,
-    fee_paying_account: protocol_id_type("account"),
-    order: protocol_id_type("limit_order"),
-    extensions: set(future_extensions)
-});
-*/
-
-// python tests
-// https://github.com/bitshares/python-bitshares/blob/9250544ca8eadf66de31c7f38fc37294c11f9548/tests/test_transactions.py

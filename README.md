@@ -7,7 +7,7 @@ Golang RPC (via websockets) client library for [Bitshares](https://bitshares.org
 ## Usage
 
 ```go
-import "github.com/scorum/openledger-go"
+import "github.com/scorum/bitshares-go"
 ```
 
 ## Example
@@ -15,7 +15,7 @@ import "github.com/scorum/openledger-go"
 client, err := NewClient("wss://bitshares.openledger.info/ws")
 
 // retrieve the current global_property_object
-client.Database.GetDynamicGlobalProperties()
+props, err := client.Database.GetDynamicGlobalProperties()
 
 // lookup symbols ids
 symbols, err := client.Database.LookupAssetSymbols("OPEN.SCR", "USD")
