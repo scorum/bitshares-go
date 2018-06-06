@@ -51,6 +51,12 @@ func (encoder *RollingEncoder) EncodeLittleEndianUInt64(i uint64) {
 	}
 }
 
+func (encoder *RollingEncoder) EncodeLittleEndianUInt32(i uint32) {
+	if encoder.err == nil {
+		encoder.err = encoder.next.EncodeLittleEndianUInt32(i)
+	}
+}
+
 func (encoder *RollingEncoder) Err() error {
 	return encoder.err
 }

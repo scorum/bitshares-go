@@ -160,6 +160,22 @@ type LimitOrderCreateOperation struct {
 	Extensions   []json.RawMessage `json:"extensions"`
 }
 
+func (op *LimitOrderCreateOperation) MarshalTransaction(encoder *transaction.Encoder) error {
+	enc := transaction.NewRollingEncoder(encoder)
+
+	enc.EncodeUVarint(uint64(op.Type()))
+	enc.Encode(op.Fee)
+	enc.Encode(op.Seller)
+	enc.Encode(op.AmountToSell)
+	enc.Encode(op.MinToReceive)
+	enc.Encode(op.Expiration)
+	enc.EncodeBool(op.FillOrKill)
+
+	//extensions
+	enc.EncodeUVarint(0)
+	return enc.Err()
+}
+
 func (op *LimitOrderCreateOperation) Type() OpType { return LimitOrderCreateOpType }
 
 // LimitOrderCancelOpType
@@ -168,6 +184,19 @@ type LimitOrderCancelOperation struct {
 	FeePayingAccount ObjectID          `json:"fee_paying_account"`
 	Order            ObjectID          `json:"order"`
 	Extensions       []json.RawMessage `json:"extensions"`
+}
+
+func (op *LimitOrderCancelOperation) MarshalTransaction(encoder *transaction.Encoder) error {
+	enc := transaction.NewRollingEncoder(encoder)
+
+	enc.EncodeUVarint(uint64(op.Type()))
+	enc.Encode(op.Fee)
+	enc.Encode(op.FeePayingAccount)
+	enc.Encode(op.Order)
+
+	// extensions
+	enc.EncodeUVarint(0)
+	return enc.Err()
 }
 
 func (op *LimitOrderCancelOperation) Type() OpType { return LimitOrderCancelOpType }
