@@ -1,6 +1,6 @@
-# scorum/openledger-go
-[![Go Report Card](https://goreportcard.com/badge/github.com/scorum/openledger-go)](https://goreportcard.com/report/github.com/scorum/openledger-go)
-[![GoDoc](https://godoc.org/github.com/scorum/openledger-go?status.svg)](https://godoc.org/github.com/scorum/openledger-go)
+# scorum/bitshares-go
+[![Go Report Card](https://goreportcard.com/badge/github.com/scorum/bitshares-go)](https://goreportcard.com/report/github.com/scorum/bitshares-go)
+[![GoDoc](https://godoc.org/github.com/scorum/bitshares-go?status.svg)](https://godoc.org/github.com/scorum/bitshares-go)
 
 Golang RPC (via websockets) client library for [Bitshares](https://bitshares.org/) and [OpenLedger](https://openledger.io) in particular
 
