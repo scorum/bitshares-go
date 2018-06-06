@@ -23,7 +23,7 @@ func (api *API) BroadcastTransaction(tx *types.Transaction) error {
 	return api.call("broadcast_transaction", []interface{}{tx}, nil)
 }
 
-func (api *API) BroadcastTransactionSynchronius(tx *types.Transaction) (*BroadcastResponse, error) {
+func (api *API) BroadcastTransactionSynchronous(tx *types.Transaction) (*BroadcastResponse, error) {
 	response := BroadcastResponse{}
 	err := api.call("broadcast_transaction_synchronous", []interface{}{tx}, &response)
 	if err != nil {

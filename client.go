@@ -213,5 +213,5 @@ func (client *Client) broadcast(stx *sign.SignedTransaction) error {
 }
 
 func (client *Client) broadcastSync(stx *sign.SignedTransaction) (*networkbroadcast.BroadcastResponse, error) {
-	return client.NetworkBroadcast.BroadcastTransactionSynchronius(stx.Transaction)
+	return client.NetworkBroadcast.BroadcastTransactionSynchronous(stx.Transaction)
 }
