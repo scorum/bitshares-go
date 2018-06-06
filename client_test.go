@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"log"
 	"testing"
+	"time"
 )
 
 const (
@@ -52,6 +53,46 @@ func TestClient_Transfer(t *testing.T) {
 	}
 
 	require.NoError(t, client.Transfer(cali4889IDActiveKey, from, to, amount, fee))
+}
+
+func TestClient_LimitOrderCreate(t *testing.T) {
+	client, err := NewClient(testNet)
+	require.Nil(t, err)
+
+	cali4889arr, err := client.Database.LookupAccounts("cali4889", 1)
+	require.Nil(t, err)
+	cali4889ID := cali4889arr["cali4889"]
+
+	sellAsset, err := client.Database.LookupAssetSymbols("TEST")
+	require.NoError(t, err)
+
+	buyAsset, err := client.Database.LookupAssetSymbols("PEG.FAKEUSD")
+	require.NoError(t, err)
+
+	amSell := types.AssetAmount{
+		Amount:  100,
+		AssetID: sellAsset[0].ID,
+	}
+	minBuy := types.AssetAmount{
+		Amount:  10,
+		AssetID: buyAsset[0].ID,
+	}
+
+	fee := types.AssetAmount{
+		AssetID: sellAsset[0].ID,
+	}
+
+	expiration := 40 * time.Hour
+
+	cali4889IDActiveKey := "5JiTY3m9u1iPfoKsZdn18pnf26XvX2WnXFJckSiSaiUniNVzxLn"
+
+	id, err := client.LimitOrderCreate(cali4889IDActiveKey, cali4889ID, fee, amSell, minBuy, expiration, false)
+	require.NoError(t, err)
+
+	orderID := types.MustParseObjectID(id)
+
+	err = client.LimitOrderCancel(cali4889IDActiveKey, cali4889ID, orderID, fee)
+	require.NoError(t, err)
 }
 
 /*

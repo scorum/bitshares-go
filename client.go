@@ -1,6 +1,8 @@
 package openledger
 
 import (
+	"encoding/json"
+
 	"github.com/pkg/errors"
 	"github.com/scorum/openledger-go/apis/database"
 	"github.com/scorum/openledger-go/apis/history"
@@ -94,24 +96,98 @@ func (client *Client) Transfer(key string, from, to types.ObjectID, amount, fee 
 	}
 	op.Fee.Amount = fees[0].Amount
 
-	return client.broadcast([]string{key}, op)
+	stx, err := client.sign([]string{key}, op)
+	if err != nil {
+		return err
+	}
+	return client.broadcast(stx)
 }
 
-// Sign the given operations with the wifs and broadcast them as one transaction
-func (client *Client) broadcast(wifs []string, operations ...types.Operation) error {
+func (client *Client) LimitOrderCreate(key string, seller types.ObjectID, fee, amToSell, minToRecive types.AssetAmount, expiration time.Duration, fillOrKill bool) (string, error) {
 	props, err := client.Database.GetDynamicGlobalProperties()
 	if err != nil {
-		return errors.Wrap(err, "failed to get dynamic global properties")
+		return "", errors.Wrap(err, "failed to get dynamic global properties")
+	}
+
+	op := &types.LimitOrderCreateOperation{
+		Fee:          fee,
+		Seller:       seller,
+		AmountToSell: amToSell,
+		MinToReceive: minToRecive,
+		Expiration:   types.NewTime(props.Time.Add(expiration)),
+		FillOrKill:   fillOrKill,
+		Extensions:   []json.RawMessage{},
+	}
+
+	fees, err := client.Database.GetRequiredFee([]types.Operation{op}, fee.AssetID.String())
+	if err != nil {
+		log.Println(err)
+		return "", errors.Wrap(err, "can't get fees")
+	}
+	op.Fee.Amount = fees[0].Amount
+
+	stx, err := client.sign([]string{key}, op)
+	if err != nil {
+		return "", err
+	}
+	result, err := client.broadcastSync(stx)
+	if err != nil {
+		return "", err
+	}
+
+	res := result.Trx["operation_results"]
+	ops, ok := res.([]interface{})
+	if !ok {
+		return "", errors.New("invalid result format")
+	}
+	create_op, ok := ops[0].([]interface{})
+	if !ok {
+		return "", errors.New("invalid result format")
+	}
+	id, ok := create_op[1].(string)
+	if !ok {
+		return "", errors.New("invalid result format")
+	}
+
+	return id, err
+}
+
+func (client *Client) LimitOrderCancel(key string, feePayingAccount, order types.ObjectID, fee types.AssetAmount) error {
+	op := &types.LimitOrderCancelOperation{
+		Fee:              fee,
+		FeePayingAccount: feePayingAccount,
+		Order:            order,
+		Extensions:       []json.RawMessage{},
+	}
+
+	fees, err := client.Database.GetRequiredFee([]types.Operation{op}, fee.AssetID.String())
+	if err != nil {
+		log.Println(err)
+		return errors.Wrap(err, "can't get fees")
+	}
+	op.Fee.Amount = fees[0].Amount
+
+	stx, err := client.sign([]string{key}, op)
+	if err != nil {
+		return err
+	}
+	return client.broadcast(stx)
+}
+
+func (client *Client) sign(wifs []string, operations ...types.Operation) (*sign.SignedTransaction, error) {
+	props, err := client.Database.GetDynamicGlobalProperties()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get dynamic global properties")
 	}
 
 	block, err := client.Database.GetBlock(props.LastIrreversibleBlockNum)
 	if err != nil {
-		return errors.Wrap(err, "failed to get block")
+		return nil, errors.Wrap(err, "failed to get block")
 	}
 
 	refBlockPrefix, err := sign.RefBlockPrefix(block.Previous)
 	if err != nil {
-		return errors.Wrap(err, "failed to sign block prefix")
+		return nil, errors.Wrap(err, "failed to sign block prefix")
 	}
 
 	expiration := props.Time.Add(10 * time.Minute)
@@ -126,8 +202,16 @@ func (client *Client) broadcast(wifs []string, operations ...types.Operation) er
 	}
 
 	if err = stx.Sign(wifs, client.chainID); err != nil {
-		return errors.Wrap(err, "failed to sign the transaction")
+		return nil, errors.Wrap(err, "failed to sign the transaction")
 	}
 
+	return stx, nil
+}
+
+func (client *Client) broadcast(stx *sign.SignedTransaction) error {
 	return client.NetworkBroadcast.BroadcastTransaction(stx.Transaction)
+}
+
+func (client *Client) broadcastSync(stx *sign.SignedTransaction) (*networkbroadcast.BroadcastResponse, error) {
+	return client.NetworkBroadcast.BroadcastTransactionSynchronius(stx.Transaction)
 }

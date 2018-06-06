@@ -31,5 +31,5 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 }
 
 func (t Time) MarshalTransaction(encoder *transaction.Encoder) error {
-	return encoder.Encode(uint32(t.Time.UTC().Unix()))
+	return encoder.EncodeLittleEndianUInt32(uint32(t.Time.UTC().Unix()))
 }
