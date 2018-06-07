@@ -38,3 +38,9 @@ client.Database.CancelAllSubscriptions()
 ```
 ## Status
 The project is in active development but should not be used in production yet.
+
+## Supported operations:
+ - Transfer
+ - LimitOrderCreate
+ - LimitOrderCancel
+

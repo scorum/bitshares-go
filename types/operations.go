@@ -200,3 +200,16 @@ func (op *LimitOrderCancelOperation) MarshalTransaction(encoder *transaction.Enc
 }
 
 func (op *LimitOrderCancelOperation) Type() OpType { return LimitOrderCancelOpType }
+
+// FillOrderOpType
+type FillOrderOperation struct {
+	Order   ObjectID
+	Account ObjectID
+	Pays    AssetAmount
+	Recives AssetAmount
+	Fee     AssetAmount
+	Price   Price
+	IsMaker bool
+}
+
+func (op *FillOrderOperation) Type() OpType { return FillOrderOpType }
