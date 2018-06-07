@@ -1,6 +1,8 @@
 # scorum/bitshares-go
 [![Go Report Card](https://goreportcard.com/badge/github.com/scorum/bitshares-go)](https://goreportcard.com/report/github.com/scorum/bitshares-go)
 [![GoDoc](https://godoc.org/github.com/scorum/bitshares-go?status.svg)](https://godoc.org/github.com/scorum/bitshares-go)
+[![Build Status](https://travis-ci.org/scorum/bitshares-go.svg?branch=master)](https://travis-ci.org/scorum/bitshares-go)
+
 
 Golang RPC (via websockets) client library for [Bitshares](https://bitshares.org/) and [OpenLedger](https://openledger.io) in particular
 
@@ -39,7 +41,7 @@ client.Database.CancelAllSubscriptions()
 ## Status
 The project is in active development but should not be used in production yet.
 
-## Supported operations:
+## Supported operations
  - Transfer
  - LimitOrderCreate
  - LimitOrderCancel
