@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const url = "wss://bitshares.openledger.info/ws"
+const url = "wss://api-ru.bts.blckchnd.com"
 
 func TestGetMarketHistory(t *testing.T) {
 	transport, err := websocket.NewTransport(url)
