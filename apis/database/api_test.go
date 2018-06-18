@@ -69,7 +69,6 @@ func TestGetAccountBalances(t *testing.T) {
 		balances, err := databaseAPI.GetAccountBalances(user, symbols[0].ID)
 		require.NoError(t, err)
 		require.NotEmpty(t, balances)
-		require.Equal(t, uint64(0), balances[0].Amount)
 	})
 }
 
