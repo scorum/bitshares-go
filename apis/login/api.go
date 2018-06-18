@@ -1,6 +1,6 @@
 package login
 
-import "github.com/scorum/openledger-go/caller"
+import "github.com/scorum/bitshares-go/caller"
 
 const APIID = 1
 

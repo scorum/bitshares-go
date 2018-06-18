@@ -1,10 +1,10 @@
 package history
 
 import (
-	"github.com/scorum/openledger-go/apis/database"
-	"github.com/scorum/openledger-go/apis/login"
-	"github.com/scorum/openledger-go/transport/websocket"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/apis/database"
+	"github.com/scorum/bitshares-go/apis/login"
+	"github.com/scorum/bitshares-go/transport/websocket"
+	"github.com/scorum/bitshares-go/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"

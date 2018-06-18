@@ -2,7 +2,7 @@ package history
 
 import (
 	"encoding/json"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/types"
 )
 
 type Bucket struct {

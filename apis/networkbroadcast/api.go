@@ -1,8 +1,8 @@
 package networkbroadcast
 
 import (
-	"github.com/scorum/openledger-go/caller"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/caller"
+	"github.com/scorum/bitshares-go/types"
 )
 
 type API struct {

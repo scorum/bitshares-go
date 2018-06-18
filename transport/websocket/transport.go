@@ -3,7 +3,7 @@ package websocket
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/scorum/openledger-go/caller"
+	"github.com/scorum/bitshares-go/caller"
 	"log"
 	"math"
 	"strconv"

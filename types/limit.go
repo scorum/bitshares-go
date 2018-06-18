@@ -1,0 +1,42 @@
+package types
+
+import (
+	"encoding/json"
+	"strconv"
+)
+
+// Suint64 uint64 with redeclared JSON unmarshal;
+// Can be parsed from uint64 either string
+type Suint64 uint64
+
+type LimitOrder struct {
+	ID          ObjectID `json:"id"`
+	Expiration  Time     `json:"expiration"`
+	Seller      ObjectID `json:"seller"`
+	ForSale     Suint64  `json:"for_sale"`
+	DeferredFee uint64   `json:"deferred_fee"`
+	SellPrice   Price    `json:"sell_price"`
+}
+
+func (su *Suint64) UnmarshalJSON(b []byte) (err error) {
+	var u uint64
+	if err = json.Unmarshal(b, &u); err == nil {
+		temp := Suint64(u)
+		su = &temp
+		return nil
+	}
+
+	// failed on uint64, try string
+	var s string
+	if err = json.Unmarshal(b, &s); err == nil {
+		u, err := strconv.Atoi(s)
+		if err != nil {
+			return err
+		}
+		temp := Suint64(u)
+		su = &temp
+		return nil
+	}
+
+	return err
+}
