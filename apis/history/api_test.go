@@ -1,16 +1,16 @@
 package history
 
 import (
-	"github.com/scorum/openledger-go/apis/database"
-	"github.com/scorum/openledger-go/apis/login"
-	"github.com/scorum/openledger-go/transport/websocket"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/apis/database"
+	"github.com/scorum/bitshares-go/apis/login"
+	"github.com/scorum/bitshares-go/transport/websocket"
+	"github.com/scorum/bitshares-go/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
 
-const url = "wss://bitshares.openledger.info/ws"
+const url = "wss://api-ru.bts.blckchnd.com"
 
 func TestGetMarketHistory(t *testing.T) {
 	transport, err := websocket.NewTransport(url)
@@ -59,8 +59,10 @@ func TestGetMarketHistoryBuckets(t *testing.T) {
 	buckets, err := historyAPI.GetMarketHistoryBuckets()
 	require.NoError(t, err)
 
-	// [15,60,300,3600,86400] in seconds
-	require.Len(t, buckets, 5)
+	// [60,900,1800,3600,14400,86400] in seconds
+	//require.Len(t, buckets, 7)
+
+	require.NotEmpty(t, buckets)
 }
 
 func TestGetFillOrderHistory(t *testing.T) {

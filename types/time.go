@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/scorum/openledger-go/encoding/transaction"
+	"github.com/scorum/bitshares-go/encoding/transaction"
 	"time"
 )
 

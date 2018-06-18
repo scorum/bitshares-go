@@ -1,7 +1,7 @@
 package bitshares
 
 import (
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/types"
 	"github.com/stretchr/testify/require"
 	"log"
 	"testing"

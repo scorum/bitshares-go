@@ -2,9 +2,9 @@ package database
 
 import (
 	"encoding/json"
-	"github.com/scorum/openledger-go/apis/login"
-	"github.com/scorum/openledger-go/transport/websocket"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/apis/login"
+	"github.com/scorum/bitshares-go/transport/websocket"
+	"github.com/scorum/bitshares-go/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -69,7 +69,6 @@ func TestGetAccountBalances(t *testing.T) {
 		balances, err := databaseAPI.GetAccountBalances(user, symbols[0].ID)
 		require.NoError(t, err)
 		require.NotEmpty(t, balances)
-		require.Equal(t, uint64(0), balances[0].Amount)
 	})
 }
 
@@ -108,7 +107,7 @@ func TestGetLimitOrders(t *testing.T) {
 	symbols, err := databaseAPI.LookupAssetSymbols("OPEN.BTC", "USD")
 	require.NoError(t, err)
 
-	orders, err := databaseAPI.GetLimitOrders(symbols[0].ID, symbols[1].ID, 100)
+	orders, err := databaseAPI.GetLimitOrders(symbols[0].ID, symbols[1].ID, 1)
 	require.NoError(t, err)
 	require.NotEmpty(t, orders)
 }

@@ -2,7 +2,7 @@ package database
 
 import (
 	"encoding/json"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/types"
 )
 
 type Asset struct {
@@ -47,7 +47,7 @@ type LimitOrder struct {
 	ID          types.ObjectID `json:"id"`
 	Expiration  types.Time     `json:"expiration"`
 	Seller      types.ObjectID `json:"seller"`
-	ForSale     uint64         `json:"for_sale"`
+	ForSale     types.Suint64  `json:"for_sale"`
 	DeferredFee uint64         `json:"deferred_fee"`
 	SellPrice   types.Price    `json:"sell_price"`
 }

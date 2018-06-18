@@ -2,29 +2,29 @@ package history
 
 import (
 	"encoding/json"
-	"github.com/scorum/openledger-go/types"
+	"github.com/scorum/bitshares-go/types"
 )
 
 type Bucket struct {
-	ID          string    `json:"id"`
-	Key         BucketKey `json:"key"`
-	HighBase    uint32    `json:"high_base"`
-	HighQuote   uint32    `json:"high_quote"`
-	LowBase     uint32    `json:"low_base"`
-	LowQuote    uint32    `json:"low_quote"`
-	OpenBase    uint32    `json:"open_base"`
-	OpenQuote   uint32    `json:"open_quote"`
-	CloseBase   uint32    `json:"close_base"`
-	CloseQuote  uint32    `json:"close_quote"`
-	BaseVolume  uint32    `json:"base_volume"`
-	QuoteVolume uint32    `json:"quote_volume"`
+	ID          string        `json:"id"`
+	Key         BucketKey     `json:"key"`
+	HighBase    types.Suint32 `json:"high_base"`
+	HighQuote   types.Suint32 `json:"high_quote"`
+	LowBase     types.Suint32 `json:"low_base"`
+	LowQuote    types.Suint32 `json:"low_quote"`
+	OpenBase    types.Suint32 `json:"open_base"`
+	OpenQuote   types.Suint32 `json:"open_quote"`
+	CloseBase   types.Suint32 `json:"close_base"`
+	CloseQuote  types.Suint32 `json:"close_quote"`
+	BaseVolume  types.Suint32 `json:"base_volume"`
+	QuoteVolume types.Suint32 `json:"quote_volume"`
 }
 
 type BucketKey struct {
-	Base    string     `json:"base"`
-	Quote   string     `json:"quote"`
-	Seconds uint32     `json:"seconds"`
-	Open    types.Time `json:"open"`
+	Base    string        `json:"base"`
+	Quote   string        `json:"quote"`
+	Seconds types.Suint32 `json:"seconds"`
+	Open    types.Time    `json:"open"`
 }
 
 type OrderHistory struct {
