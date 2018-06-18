@@ -43,6 +43,15 @@ type MarketTicker struct {
 	QuoteVolume   string         `json:"quote_volume"`
 }
 
+type LimitOrder struct {
+	ID          types.ObjectID `json:"id"`
+	Expiration  types.Time     `json:"expiration"`
+	Seller      types.ObjectID `json:"seller"`
+	ForSale     types.Suint64  `json:"for_sale"`
+	DeferredFee uint64         `json:"deferred_fee"`
+	SellPrice   types.Price    `json:"sell_price"`
+}
+
 type DynamicGlobalProperties struct {
 	ID                             types.ObjectID `json:"id"`
 	HeadBlockNumber                uint32         `json:"head_block_number"`

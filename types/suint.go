@@ -13,15 +13,6 @@ type Suint64 uint64
 // Can be parsed from uint32 either string
 type Suint32 uint32
 
-type LimitOrder struct {
-	ID          ObjectID `json:"id"`
-	Expiration  Time     `json:"expiration"`
-	Seller      ObjectID `json:"seller"`
-	ForSale     Suint64  `json:"for_sale"`
-	DeferredFee uint64   `json:"deferred_fee"`
-	SellPrice   Price    `json:"sell_price"`
-}
-
 func (su *Suint64) UnmarshalJSON(b []byte) (err error) {
 	var u uint64
 	if err = json.Unmarshal(b, &u); err == nil {

@@ -71,8 +71,8 @@ func (api *API) LookupAssetSymbols(symbols ...string) ([]*Asset, error) {
 // There are both sell and buy orders.
 // For the sell orders LimitOrder.SellPrice.Base = the given base
 // For the buy orders LimitOrder.SellPrice.Base = the given quote
-func (api *API) GetLimitOrders(base, quote types.ObjectID, limit uint32) ([]*types.LimitOrder, error) {
-	var resp []*types.LimitOrder
+func (api *API) GetLimitOrders(base, quote types.ObjectID, limit uint32) ([]*LimitOrder, error) {
+	var resp []*LimitOrder
 	err := api.call("get_limit_orders", []interface{}{base.String(), quote.String(), limit}, &resp)
 	return resp, err
 }
