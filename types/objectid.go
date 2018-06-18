@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/scorum/openledger-go/encoding/transaction"
+	"github.com/scorum/bitshares-go/encoding/transaction"
 	"strconv"
 	"strings"
 )
