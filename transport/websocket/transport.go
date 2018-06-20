@@ -83,9 +83,6 @@ func (caller *Transport) Call(api caller.APIID, method string, args []interface{
 		Params: []interface{}{api, method, args},
 	}
 
-	debug, _ := json.Marshal(request)
-	log.Printf("[DEBUG] ws.Call method:%s request:%s\n", method, string(debug))
-
 	// send Json Rcp request
 	if err := websocket.JSON.Send(caller.conn, request); err != nil {
 		caller.mutex.Lock()
@@ -164,9 +161,6 @@ func (caller *Transport) onCallResponse(response transport.RPCResponse, call *ca
 	call.Reply = response.Result
 	call.Done <- true
 	caller.mutex.Unlock()
-
-	debug, _ := json.Marshal(response)
-	println(string(debug))
 }
 
 // Incoming notice handler
